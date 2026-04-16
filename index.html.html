@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSG Global × Amplitude</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #071422;
+    --bg-2: #0c1e30;
+    --bg-3: #112840;
+    --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(255,255,255,0.13);
+    --text-primary: #f0f4f8;
+    --text-secondary: #a8bfcf;
+    --text-muted: #6a8499;
+    --accent: #f5c842;
+    --accent-2: #fad96a;
+    --accent-soft: rgba(245,200,66,0.1);
+    --accent-glow: rgba(245,200,66,0.05);
+    --green: #3db87a;
+    --blue: #4a9eda;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* PSG BRAND ACCENT — gold diagonal stripe */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,11,0.85);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+
+  .nav-logo span {
+    color: var(--text-muted);
+    margin: 0 4px;
+  }
+
+  .nav-tag {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(245,200,66,0.3);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 140px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-orb {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,200,66,0.06) 0%, transparent 70%);
+    top: -100px;
+    right: -100px;
+    pointer-events: none;
+  }
+
+  .hero-bg-orb-2 {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(74,158,218,0.07) 0%, transparent 70%);
+    bottom: 0;
+    left: 200px;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .hero-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(52px, 7vw, 96px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    max-width: 900px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+    font-weight: 600;
+  }
+
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--text-secondary);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.8s;
+  }
+
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hero-meta-label {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .hero-meta-value {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border-accent);
+  }
+
+  /* SECTION WRAPPER */
+  section {
+    padding: 120px 48px;
+    position: relative;
+  }
+
+  .section-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--border-accent);
+  }
+
+  /* CONCLUSION SECTION */
+  .conclusion {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .conclusion-card {
+    background: var(--accent-soft);
+    border: 1px solid rgba(245,200,66,0.2);
+    border-radius: 4px;
+    padding: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .conclusion-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+
+  .conclusion-quote {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(28px, 3.5vw, 44px);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    max-width: 820px;
+    margin-bottom: 32px;
+  }
+
+  .conclusion-quote em {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .conclusion-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: 0.02em;
+    font-style: italic;
+  }
+
+  /* THREE PILLARS */
+  .pillars {
+    background: var(--bg-2);
+  }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .pillar {
+    background: var(--bg-2);
+    padding: 60px 48px;
+    position: relative;
+    transition: background 0.3s ease;
+  }
+
+  .pillar:hover {
+    background: var(--bg-3);
+  }
+
+  .pillar-number {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 80px;
+    line-height: 1;
+    color: var(--border-accent);
+    margin-bottom: 32px;
+    display: block;
+    letter-spacing: -0.04em;
+  }
+
+  .pillar-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 26px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .pillar-title em {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .pillar-body {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 40px;
+  }
+
+  .pillar-quote {
+    border-left: 2px solid var(--accent);
+    padding-left: 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* WHAT CHANGES */
+  .changes {
+    background: var(--bg);
+  }
+
+  .changes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+
+  .changes-header {
+    grid-column: 1 / -1;
+    margin-bottom: 16px;
+  }
+
+  .changes-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 700px;
+  }
+
+  .changes-headline em {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .change-item {
+    padding: 40px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-2);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .change-item:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-2px);
+  }
+
+  .change-item-accent {
+    border-color: rgba(245,200,66,0.25);
+    background: linear-gradient(135deg, var(--bg-2) 0%, rgba(245,200,66,0.04) 100%);
+  }
+
+  .change-feature-tag {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .change-title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .change-body {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+
+  .change-before-after {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .ba-box {
+    padding: 16px;
+    border-radius: 3px;
+  }
+
+  .ba-before {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+  }
+
+  .ba-after {
+    background: rgba(245,200,66,0.07);
+    border: 1px solid rgba(245,200,66,0.2);
+  }
+
+  .ba-label {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+  }
+
+  .ba-after .ba-label { color: var(--accent); }
+
+  .ba-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* PATH FORWARD */
+  .path {
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .path-header {
+    margin-bottom: 64px;
+  }
+
+  .path-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(36px, 4vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 600px;
+    margin-bottom: 16px;
+  }
+
+  .path-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 480px;
+  }
+
+  .path-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+
+  .path-step {
+    background: var(--bg-2);
+    padding: 44px 36px;
+    position: relative;
+  }
+
+  .path-step-number {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .path-step-title {
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .path-step-body {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .path-step-active {
+    background: var(--bg-3);
+    border-left: 2px solid var(--accent);
+  }
+
+  .path-step-active .path-step-number {
+    color: var(--accent);
+  }
+
+  /* COMPASS INSIGHT */
+  .compass-insight {
+    background: var(--bg-3);
+    border: 1px solid var(--border-accent);
+    border-radius: 4px;
+    padding: 48px 52px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .insight-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 28px;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+
+  .insight-headline em {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .insight-body {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+
+  .insight-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .stat-box {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 24px 20px;
+  }
+
+  .stat-number {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--accent-2);
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  /* WHY NOW */
+  .why-now {
+    background: var(--bg);
+  }
+
+  .why-now-inner {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .why-now-left {
+    position: sticky;
+    top: 100px;
+  }
+
+  .why-now-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(36px, 3.5vw, 48px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  .why-now-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+
+  .why-now-points {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .why-point {
+    background: var(--bg-2);
+    padding: 36px 40px;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 24px;
+    align-items: start;
+    transition: background 0.3s ease;
+  }
+
+  .why-point:hover {
+    background: var(--bg-3);
+  }
+
+  .why-point-icon {
+    width: 3px;
+    height: 100%;
+    min-height: 60px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .why-point-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .why-point-body {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cta-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  .cta-headline em {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .cta-sub {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #071422;
+    border: none;
+    padding: 16px 36px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    background: #d9ae2a;
+    transform: translateY(-1px);
+    color: #071422;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-accent);
+    padding: 16px 36px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* HORIZONTAL RULE */
+  .hr {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    section { padding: 80px 24px; }
+    .hero { padding: 120px 24px 60px; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .changes-grid { grid-template-columns: 1fr; }
+    .path-steps { grid-template-columns: 1fr; }
+    .compass-insight { grid-template-columns: 1fr; }
+    .why-now-inner { grid-template-columns: 1fr; }
+    .why-now-left { position: static; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="18" r="17" fill="#F5C842" stroke="#1a1a1a" stroke-width="1.5"/>
+        <text x="18" y="23" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="11" fill="#1a1a1a" letter-spacing="0.5">psg</text>
+      </svg>
+      <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.02em;">PSG Global Solutions</span>
+    </div>
+  </div>
+  <div class="nav-tag">Confidential — Internal Use</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-orb"></div>
+  <div class="hero-bg-orb-2"></div>
+  <div class="hero-eyebrow">Product Intelligence Brief — April 2026</div>
+  <h1 class="hero-headline">
+    PSG's product decisions<br>deserve better than<br><em>a guess.</em>
+  </h1>
+  <p class="hero-sub">
+    Compass is PSG's core product — and the experience recruiters and hiring managers have inside it drives every metric that matters. This is what it looks like when that product is backed by data.
+  </p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Prepared for</span>
+      <span class="hero-meta-value">PSG Global Solutions — Product & Innovation</span>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Platform</span>
+      <span class="hero-meta-value">Amplitude Digital Analytics</span>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Focus Areas</span>
+      <span class="hero-meta-value">Product Analytics · Experimentation · AI Evaluators</span>
+    </div>
+  </div>
+</section>
+
+<div class="hr"></div>
+
+<!-- CONCLUSION FIRST — PYRAMID PRINCIPLE -->
+<section class="conclusion fade-in">
+  <div class="section-inner">
+    <div class="section-label">The Bottom Line</div>
+    <div class="conclusion-card">
+      <p class="conclusion-quote">
+        PSG has two numbers that matter: <em>cost per lead and cost per hire.</em> Right now both are being shaped by a product team making decisions without behavioral data — that's the gap. Amplitude closes it, and the impact on both metrics is direct and measurable.
+      </p>
+      <p class="conclusion-note">— PSG's two core recruiting metrics — cost per lead and cost per hire — are directly shaped by how well Compass performs. The recruiters and hiring managers using Compass every day are the ones who feel it first, and Amplitude is how PSG knows whether they're succeeding.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THREE PILLARS -->
+<section class="pillars fade-in">
+  <div class="section-inner">
+    <div class="section-label">Why Amplitude — Three Reasons</div>
+    <div class="pillars-grid">
+
+      <div class="pillar">
+        <span class="pillar-number">01</span>
+        <h3 class="pillar-title">Stop finding out about<br>friction <em>too late</em></h3>
+        <p class="pillar-body">
+          Compass workflows run 13+ clicks deep. Right now PSG finds out where recruiters get stuck when they call — by which point the damage to cost per hire is already done. Amplitude surfaces every drop-off and friction point in real time, before it becomes a lost customer.
+        </p>
+        <div class="pillar-quote">
+          PSG's product team wants to move from reactive — hearing about friction when customers call — to proactive, seeing it before it becomes a problem.
+        </div>
+      </div>
+
+      <div class="pillar">
+        <span class="pillar-number">02</span>
+        <h3 class="pillar-title">Build on evidence,<br>not <em>instinct</em></h3>
+        <p class="pillar-body">
+          Every feature built without data is a bet on instinct — and PSG has identified that as the pattern to break. Amplitude's experimentation layer lets the team validate a new Compass module before committing, and kill what doesn't work before it ships.
+        </p>
+        <div class="pillar-quote">
+          Experimentation was already on PSG's radar independently — Amplitude brings it natively, without a separate tool or contract.
+        </div>
+      </div>
+
+      <div class="pillar">
+        <span class="pillar-number">03</span>
+        <h3 class="pillar-title">Make your AI<br><em>accountable</em> at scale</h3>
+        <p class="pillar-body">
+          PSG's voice AI screens candidates at scale — a real competitive advantage. But without an evaluation layer, there's no systematic way to know it's performing well. Amplitude's AI evaluators monitor every conversation and surface what needs fixing, so the AI stays an asset.
+        </p>
+        <div class="pillar-quote">
+          AI evaluation was already being explored internally at PSG — Amplitude's evaluators provide a systematic, scalable version of exactly that.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- WHY AMPLITUDE -->
+<section style="padding: 100px 48px; background: var(--bg-3); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);" class="fade-in">
+  <div class="section-inner">
+    <div class="section-label">Why Amplitude</div>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: start; margin-bottom: 56px;">
+      <div>
+        <h2 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(32px, 3.5vw, 48px); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em;">Not just analytics.<br><em style="color: var(--accent);">The right one.</em></h2>
+      </div>
+      <div>
+        <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.8;">PSG needs more than a reporting layer — it needs a platform built for exactly this situation: a complex B2B product, a team that can't wait on data engineers, AI that needs to be held accountable, and a product roadmap that has to move fast. That's a specific problem. Most analytics tools aren't built for it. Amplitude is.</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden;">
+
+      <div style="background: var(--bg-2); padding: 44px 48px; transition: background 0.3s ease;" onmouseover="this.style.background='var(--bg-3)'" onmouseout="this.style.background='var(--bg-2)'">
+        <div style="width: 3px; height: 32px; background: var(--accent); border-radius: 2px; margin-bottom: 24px;"></div>
+        <h4 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em;">AI built in — not bolted on</h4>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.75;">Amplitude's AI isn't a separate module or an add-on charge. Session replay agents, AI evaluators, automated insights — it's natively embedded across the entire platform. PSG gets it from day one, at no extra cost, without a second contract.</p>
+      </div>
+
+      <div style="background: var(--bg-2); padding: 44px 48px; transition: background 0.3s ease;" onmouseover="this.style.background='var(--bg-3)'" onmouseout="this.style.background='var(--bg-2)'">
+        <div style="width: 3px; height: 32px; background: var(--accent); border-radius: 2px; margin-bottom: 24px;"></div>
+        <h4 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em;">Analytics and experimentation in one platform</h4>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.75;">PSG was already evaluating a separate experimentation tool. Amplitude eliminates that second contract — analytics, experimentation, session replay, and AI evaluators all live together, with data that flows seamlessly between them. No stitching, no duplication.</p>
+      </div>
+
+      <div style="background: var(--bg-2); padding: 44px 48px; transition: background 0.3s ease;" onmouseover="this.style.background='var(--bg-3)'" onmouseout="this.style.background='var(--bg-2)'">
+        <div style="width: 3px; height: 32px; background: var(--accent); border-radius: 2px; margin-bottom: 24px;"></div>
+        <h4 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em;">Built for complex B2B products</h4>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.75;">Compass has deep workflows, a multi-tenant architecture, and enterprise clients who each need their own analytics view. Amplitude handles all of it natively — granular event tracking across 13+ click hierarchies, one project per client, and a portfolio view across all of them. This is exactly the infrastructure gap that previous tools failed to fill.</p>
+      </div>
+
+      <div style="background: var(--bg-2); padding: 44px 48px; transition: background 0.3s ease;" onmouseover="this.style.background='var(--bg-3)'" onmouseout="this.style.background='var(--bg-2)'">
+        <div style="width: 3px; height: 32px; background: var(--accent); border-radius: 2px; margin-bottom: 24px;"></div>
+        <h4 style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 600; margin-bottom: 14px; letter-spacing: -0.01em;">Any team member can get answers — no SQL, no wait</h4>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.75;">Waiting on a data team to answer a product question is a tax on speed. Amplitude is built so that anyone — product managers, recruiters, Colton — can ask questions about user behavior in plain language and get answers instantly. The insight is always one step away from the person who needs to act on it.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- WHAT CHANGES -->
+<section class="changes fade-in">
+  <div class="section-inner">
+    <div class="changes-header">
+      <div class="section-label">What Actually Changes</div>
+      <h2 class="changes-headline">What stops hurting.<br><em>What starts working.</em></h2>
+    </div>
+    <div class="changes-grid">
+
+      <div class="change-item change-item-accent">
+        <span class="change-feature-tag">Product Analytics</span>
+        <h4 class="change-title">Connect campaign spend to actual outcomes</h4>
+        <p class="change-body">Parth described it directly: "$50 to promote a job requisition — how many leads, how many pre-screened, how many hired." That full funnel is where cost per lead lives. Right now PSG can see the spend. It can't see where the product breaks the ROI of that spend. Amplitude closes the loop — every campaign, every workflow, every drop-off point visible in one place.</p>
+        <div class="change-before-after">
+          <div class="ba-box ba-before">
+            <div class="ba-label">Before</div>
+            <div class="ba-text">Customers flag issues. Power BI shows outcomes. No behavioral layer.</div>
+          </div>
+          <div class="ba-box ba-after">
+            <div class="ba-label">After</div>
+            <div class="ba-text">See every click, every drop-off, every friction point before it becomes a support ticket.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="change-item">
+        <span class="change-feature-tag">Experimentation</span>
+        <h4 class="change-title">Ship features that actually move the needle</h4>
+        <p class="change-body">PSG has been building on intuition — Parth said it directly. That's not a critique, it's where every product team starts. Amplitude's experimentation layer is how you graduate from it: test a new Compass module before committing, validate that it improves recruiter efficiency, and stop spending engineering cycles on things that won't move cost per hire.</p>
+        <div class="change-before-after">
+          <div class="ba-box ba-before">
+            <div class="ba-label">Before</div>
+            <div class="ba-text">Ship and observe. Rollbacks are painful. Data comes weeks later.</div>
+          </div>
+          <div class="ba-box ba-after">
+            <div class="ba-label">After</div>
+            <div class="ba-text">Validate before you commit. Every feature decision backed by a real signal.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="change-item">
+        <span class="change-feature-tag">Session Replay + AI</span>
+        <h4 class="change-title">Watch at scale without watching</h4>
+        <p class="change-body">Amplitude's session replay AI automatically watches recordings, surfaces friction patterns, and delivers recommendations — organized by impact. No one sits in a room reviewing videos. The agent does it and tells you what matters.</p>
+        <div class="change-before-after">
+          <div class="ba-box ba-before">
+            <div class="ba-label">Before</div>
+            <div class="ba-text">Customers report issues directly. Reactive, not proactive.</div>
+          </div>
+          <div class="ba-box ba-after">
+            <div class="ba-label">After</div>
+            <div class="ba-text">AI surfaces friction before customers churn. Proactive product improvement.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="change-item change-item-accent">
+        <span class="change-feature-tag">AI Evaluators</span>
+        <h4 class="change-title">Make your AI accountable</h4>
+        <p class="change-body">PSG's voice AI screens candidates at scale — but how do you know it's working? Amplitude's evaluator framework monitors every AI conversation, scores performance against your own criteria, and flags where the model needs tuning. Built for teams already evaluating AI quality in-house.</p>
+        <div class="change-before-after">
+          <div class="ba-box ba-before">
+            <div class="ba-label">Before</div>
+            <div class="ba-text">Manual spot checks. No systematic quality layer on AI agent performance.</div>
+          </div>
+          <div class="ba-box ba-after">
+            <div class="ba-label">After</div>
+            <div class="ba-text">Automated, continuous evaluation. Every conversation scored. Outliers flagged automatically.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CUSTOMER PROOF — TEMPORAL -->
+<section style="padding: 72px 48px; background: var(--bg-3); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);" class="fade-in">
+  <div class="section-inner">
+    <div class="section-label">In Practice</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
+      <div>
+        <!-- Temporal Logo -->
+        <div style="display: inline-flex; align-items: center; gap: 10px; background: #4B45D6; border-radius: 8px; padding: 10px 18px; margin-bottom: 28px;">
+          <svg width="22" height="22" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="10" stroke="white" stroke-width="2.5" fill="none"/>
+            <line x1="20" y1="4" x2="20" y2="36" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="4" y1="20" x2="36" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M8 12 Q20 6 32 12" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M8 28 Q20 34 32 28" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </svg>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 600; color: white; letter-spacing: 0.01em;">Temporal</span>
+        </div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(24px, 2.5vw, 34px); font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; margin-bottom: 20px;">
+          A B2B platform.<br>A data blind spot.<br><span style="color: var(--accent);">A familiar story.</span>
+        </div>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 24px;">
+          Temporal is a B2B SaaS platform that rolled out self-service sign-up as part of a product-led growth push — but limited data visibility put their strategy at risk. They couldn't see where users were dropping off, what was driving activation, or which behaviors correlated with growth.
+        </p>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.75;">
+          By consolidating on Amplitude, Temporal unified their web and product data into a single source of truth — and unlocked higher signup conversions, faster user activation, and sustained growth across teams and accounts.
+        </p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: var(--bg-2); border: 1px solid var(--border-accent); border-radius: 4px; padding: 28px 32px;">
+          <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px;">The gap they had</div>
+          <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.65;">Web data and product data lived separately. No single view of the user journey from first visit to active usage.</div>
+        </div>
+        <div style="background: var(--bg-2); border: 1px solid rgba(245,200,66,0.2); border-radius: 4px; padding: 28px 32px;">
+          <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px;">What changed</div>
+          <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.65;">Unified behavioral data across the full funnel — higher signup conversions, faster activation, and a product team that could finally act on what users were actually doing.</div>
+        </div>
+        <a href="https://amplitude.com/blog/temporal-increased-signups-by-doubling-down-on-plg" target="_blank" style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 4px 0;">
+          Read the full story →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPASS SPECIFIC INSIGHT -->
+<section style="padding: 80px 48px; background: var(--bg-2);" class="fade-in">
+  <div class="section-inner">
+    <div class="compass-insight">
+      <div>
+        <h3 class="insight-headline">Built around how<br><em>Compass customers</em> actually work.</h3>
+        <p class="insight-body">
+          The recruiters and hiring managers using Compass every day are PSG's real customers — and their experience inside the product is what drives retention, referrals, and renewal. Amplitude handles PSG's multi-tenant architecture natively: one project per client account, with a Portfolio View across all of them. Parth gets granular per-client analytics and a consolidated view of the entire Compass user base in one workspace. And for PSG's customers who want data visibility of their own, Amplitude charts can be embedded directly inside Compass — so they get insights without ever leaving the platform they already use.
+        </p>
+      </div>
+      <div class="insight-stats">
+        <div class="stat-box">
+          <div class="stat-number">0</div>
+          <div class="stat-label">Product analytics tools in PSG's current stack — Power BI handles reporting, not behavior</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">13+</div>
+          <div class="stat-label">Clicks deep in Compass workflows — all of it instrumentable, none of it visible today</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">~2 wks</div>
+          <div class="stat-label">To first real behavioral insight in Compass after instrumentation begins</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">1</div>
+          <div class="stat-label">Portfolio view across all Compass client accounts — every customer, one workspace</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY NOW -->
+<section class="why-now fade-in">
+  <div class="section-inner">
+    <div class="why-now-inner">
+      <div class="why-now-left">
+        <div class="section-label">Why Now</div>
+        <h2 class="why-now-headline">The cost of waiting is real — and avoidable.</h2>
+        <p class="why-now-sub">Three specific things are working against PSG right now. All three are fixable. The question is how long they run before someone stops them.</p>
+      </div>
+      <div class="why-now-points">
+        <div class="why-point">
+          <div class="why-point-icon"> </div>
+          <div>
+            <div class="why-point-title" style="font-size: 18px;">Campaign spend without product visibility is leaving money on the table</div>
+            <p class="why-point-body">PSG spends to promote job requisitions across LinkedIn and other channels. Without a behavioral layer, there's no way to know which campaigns drive candidates all the way through to hire — and which just generate leads that Compass loses somewhere in the funnel. Amplitude connects those dots and shows you exactly where to optimize spend.</p>
+          </div>
+        </div>
+        <div class="why-point">
+          <div class="why-point-icon"> </div>
+          <div>
+            <div class="why-point-title" style="font-size: 18px;">Silent disengagement is easier to prevent than reverse</div>
+            <p class="why-point-body">Customers who start using Compass less don't always say why. By the time it's obvious, recovery is hard. Amplitude surfaces behavioral warning signals weeks before they become churn — giving PSG's team time to act, not react. That's the difference between retaining a customer and replacing one.</p>
+          </div>
+        </div>
+        <div class="why-point">
+          <div class="why-point-icon"> </div>
+          <div>
+            <div class="why-point-title" style="font-size: 18px;">Instrumentation is cleanest before you scale further</div>
+            <p class="why-point-body">PSG is adding enterprise customers to Compass now. Instrumenting a product at this stage is a contained, manageable project. Every new client, integration, and architecture decision that happens before this gets done makes it a bigger lift — and delays the insight that would have improved every placement in the meantime.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESOURCES STRIP -->
+<section style="padding: 48px 48px; background: var(--bg); border-top: 1px solid var(--border);" class="fade-in">
+  <div class="section-inner">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+      <div style="width: 32px; height: 1px; background: var(--border-accent);"></div>
+      <span style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted);">Further Reading</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+      <a href="https://amplitude.com/amplitude-analytics" target="_blank" style="text-decoration: none; display: block; padding: 24px 28px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; transition: border-color 0.2s ease;" onmouseover="this.style.borderColor='rgba(245,200,66,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px;">Platform</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; line-height: 1.3;">Amplitude Analytics</div>
+        <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">Understand the full user journey — from first click to conversion and retention.</div>
+      </a>
+
+      <a href="https://amplitude.com/ai" target="_blank" style="text-decoration: none; display: block; padding: 24px 28px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; transition: border-color 0.2s ease;" onmouseover="this.style.borderColor='rgba(245,200,66,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px;">AI</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; line-height: 1.3;">Amplitude AI</div>
+        <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">Analytics that never stops working — agents, evaluators, and automated insights built in.</div>
+      </a>
+
+      <a href="https://amplitude.com/resources/g2-product-analytics-report" target="_blank" style="text-decoration: none; display: block; padding: 24px 28px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; transition: border-color 0.2s ease;" onmouseover="this.style.borderColor='rgba(245,200,66,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px;">Validation</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; line-height: 1.3;">G2 Product Analytics Report</div>
+        <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">See how Amplitude ranks against the market — independently verified by G2.</div>
+      </a>
+
+      <a href="https://amplitude.com/blog/temporal-increased-signups-by-doubling-down-on-plg" target="_blank" style="text-decoration: none; display: block; padding: 24px 28px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; transition: border-color 0.2s ease;" onmouseover="this.style.borderColor='rgba(245,200,66,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px;">Customer Story</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; line-height: 1.3;">Temporal</div>
+        <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">How a B2B platform closed its data blind spot and unlocked higher conversions and activation.</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section fade-in">
+  <div class="section-inner">
+    <div class="cta-inner">
+      <div class="section-label" style="justify-content: center;">Next Step</div>
+      <h2 class="cta-headline">Lower cost per lead.<br>Lower cost per <em>hire.</em></h2>
+      <p class="cta-sub">The recruiters using Compass, the hiring managers running placements, the clients paying for outcomes — they all benefit when PSG's product decisions are backed by data. The proposal shows what that investment looks like, and what it unlocks.</p>
+      <div class="cta-actions">
+        <a href="https://amplitude.com/resources/g2-product-analytics-report" target="_blank" class="btn-primary">Read the G2 Report</a>
+        <a href="https://amplitude.com/blog/temporal-increased-signups-by-doubling-down-on-plg" target="_blank" class="btn-ghost">Temporal Customer Story</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-text">PSG Global Solutions × Amplitude — Confidential — April 2026</div>
+  <div class="footer-text">Prepared by John Wallace · john.wallace@amplitude.com · 631-942-8868</div>
+</footer>
+
+<script>
+  // Scroll-triggered fade-ins
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
